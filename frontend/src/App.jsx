@@ -5,6 +5,7 @@ import Header from "./customer/components/header/Header";
 import Home from "./pages/home/Home";
 import { useContext } from "react";
 import { ThemeContext } from "./contexts/theme/theme.context";
+import { Outlet } from "react-router-dom";
 
 function App() {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -14,7 +15,9 @@ function App() {
       <Header />
 
       {/* Main Content - Home */}
-      <Home />
+      <main>
+        <Outlet />
+      </main>
 
       {/* Footer Component */}
       <Footer />

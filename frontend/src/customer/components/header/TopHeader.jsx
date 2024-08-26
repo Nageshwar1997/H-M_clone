@@ -8,6 +8,7 @@ import { IoIosSearch } from "react-icons/io";
 
 // Components
 import Logo from "./Logo";
+import { Link } from "react-router-dom";
 
 const TopHeader = () => {
   return (
@@ -48,10 +49,10 @@ const TopHeader = () => {
 
       {/* Right Section - Icons and Text */}
       <div className="w-full flex justify-center md:justify-end items-center gap-6">
-        <div className="flex items-center gap-2 cursor-pointer hover:text-red-600 dark:hover:text-red-600 text-gray-800 dark:text-darkText font-medium transition-colors">
+        <Link to="/login" className="flex items-center gap-2 cursor-pointer hover:text-red-600 dark:hover:text-red-600 text-gray-800 dark:text-darkText font-medium transition-colors">
           <FaRegUserCircle size={24} />
           <span className="text-sm lg:text-base">Sign In</span>
-        </div>
+        </Link>
         <div className="flex items-center gap-2 cursor-pointer hover:text-red-600 dark:hover:text-red-600 text-gray-800 dark:text-darkText font-medium transition-colors">
           <FaRegHeart size={24} />
           <span className="text-sm lg:text-base">Favourites</span>
