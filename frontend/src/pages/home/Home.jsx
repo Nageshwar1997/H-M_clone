@@ -10,23 +10,29 @@ import HomeCarousel from "../../customer/components/home/HomeCarousel";
 
 const Home = () => {
   return (
-    <div className="max-w-[60rem] w-full mx-auto flex flex-col gap-5">
-      <div className="w-full">
-        <ul className="flex justify-around items-center p-4 text-sm text-center">
-          <li className="hover:text-red-600 hover:underline cursor-pointer hover:font-medium max-w-[33%] w-full">
-            Free shipping above ₹1999
-          </li>
-          <li className="hover:text-red-600 hover:underline cursor-pointer hover:font-medium max-w-[33%] w-full">
-            Estimated delivery time: 2-7 days
-          </li>
-          <li className="hover:text-red-600 hover:underline cursor-pointer hover:font-medium max-w-[33%] w-full">
-            Free & flexible 15 days return
-          </li>
+    <div className="max-w-[65rem] w-full mx-auto flex flex-col gap-5 px-4 sm:px-6 lg:px-8">
+      {/* Info Bar */}
+      <div className="w-full bg-white dark:bg-darkBackground rounded-lg shadow-sm">
+        <ul className="flex flex-col sm:flex-row justify-between items-center p-4 text-xs sm:text-sm lg:text-base text-center text-gray-700 dark:text-darkText gap-2 sm:gap-0">
+          {[
+            "Free shipping above ₹1999",
+            "Estimated delivery time: 2-7 days",
+            "Free & flexible 15 days return",
+          ].map((text, index) => (
+            <li
+              key={index}
+              className="hover:text-red-600 dark:hover:text-red-500 hover:underline cursor-pointer hover:font-medium transition-all duration-300 ease-in-out max-w-[100%] sm:max-w-[33%] w-full"
+            >
+              {text}
+            </li>
+          ))}
         </ul>
       </div>
-      <HomeCarousel />
+
+      {/* Carousel and Banners */}
       <SeasonalSwitchUpBanner />
       <TheBestOfSeasonStartingBanner />
+      <HomeCarousel />
       <LuxeAthleisureBanner />
       <TheJeansEditBanner />
       <TheSportLuxeEdit />

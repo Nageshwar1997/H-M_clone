@@ -7,9 +7,6 @@ import NextArrow from "./NextArrow";
 import PrevArrow from "./PrevArrow";
 
 const HomeCarousel = () => {
-
-
-
   const products = [
     {
       id: 1,
@@ -112,26 +109,24 @@ const HomeCarousel = () => {
   const settings = {
     dots: false,
     infinite: true,
-    speed: 1000,
-    slidesToScroll: 1,
-    slidesToShow: 5,
-    autoplay: true,
-    autoplaySpeed: 3000,
+    speed: 1500,
+    slidesToScroll: 3,
+    slidesToShow: 6,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
     responsive: [
       {
         breakpoint: 1536,
         settings: {
-          slidesToShow: 5,
-          slidesToScroll: 3,
+          slidesToShow: 6,
+          slidesToScroll: 4,
         },
       },
       {
         breakpoint: 1280,
         settings: {
           slidesToShow: 4,
-          slidesToScroll: 2,
+          slidesToScroll: 3,
         },
       },
       {
@@ -159,27 +154,34 @@ const HomeCarousel = () => {
   };
 
   return (
-    <div className="relative w-full m-auto bg-gradient-to-b from-gray-100 to-gray-300 rounded">
-      <div className="">
+    <div className="relative w-full mx-auto bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-800 dark:to-gray-900 rounded-lg py-4">
+      <div className="w-full mx-auto">
         <Slider {...settings}>
           {products.map((product, index) => (
             <div
               key={index}
-              className="p-2 transform hover:scale-95 transition-transform duration-300 cursor-pointer"
+              className="px-2 transform hover:scale-95 transition-transform duration-300 cursor-pointer"
             >
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden h-[300px] md:h-[350px]">
-                <div className="h-[120px] md:h-[180px] lg:h-[230px] flex justify-center items-center p-2">
+              <div className="bg-white dark:bg-darkBackground rounded-lg shadow-lg overflow-hidden h-[260px] md:h-[300px]">
+                {/* Image Container */}
+                <div className="h-3/5 flex justify-center items-center p-2 bg-gray-100 dark:bg-gray-700">
                   <img
                     src={product.url}
                     alt={product.name}
-                    className="h-full w-full mix-blend-multiply object-cover"
+                    className="h-full w-auto object-contain rounded-md"
                   />
                 </div>
+
+                {/* Product Info */}
                 <div className="text-center py-2 mt-2 px-1">
-                  <p className="text-sm line-clamp-1">{product.name}</p>
-                  <p className="text-sm md:text-lg  text-gray-800">
-                    Rs.{product.price}
+                  <p className="text-sm lg:text-base text-gray-800 dark:text-darkText line-clamp-1">
+                    {product.name}
                   </p>
+                  <p className="text-sm md:text-lg text-gray-800 dark:text-darkText font-semibold">
+                    Rs. {product.price}
+                  </p>
+
+                  {/* Rating Dots */}
                   <div className="flex justify-center gap-1 mt-2">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <span
