@@ -130,7 +130,7 @@ const Footer = () => {
         </div>
         <p className="text-center text-gray-700 dark:text-darkText text-xs sm:text-sm">
           The content of this site is copyright-protected and is the property of
-          H & M Hennes & Mauritz AB.
+          Nageshwar Pawar.
         </p>
         <div className="mx-auto w-full">
           <img src={Logo} alt="H&M Logo" className="w-8 sm:w-10 md:w-14 mx-auto" />
