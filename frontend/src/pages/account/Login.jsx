@@ -1,39 +1,38 @@
-import React, { useState } from "react";
+import React, {  useState } from "react";
 import NavigationPath from "../../customer/components/common/NavigationPath";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [selectedLoginOption, setSelectedLoginOption] = useState("email");
-  const [loginDetails, setLoginDetails] = useState({
-    email: "",
-    phone: "",
-    password: "",
-  });
+  // const [loginDetails, setLoginDetails] = useState({
+  //   email: "",
+  //   phone: "",
+  //   password: "",
+  // });
 
   return (
     <div className="max-w-[45rem] w-full mx-auto flex flex-col gap-1 px-4 sm:px-6 lg:px-8">
       <NavigationPath />
-      <h3 className="text-center text-sm sm:text-lg md:text-xl font-bold mb-4">
+      <h3 className="text-center text-sm sm:text-lg md:text-xl font-bold mb-4 dark:text-white">
         Sign in
       </h3>
-      <p className="text-center text-xs sm:text-sm mb-4">
-        Become a member — don't miss out on deals, offers, discounts and bonus
+      <p className="text-center text-xs sm:text-sm mb-4 dark:text-gray-300">
+        Become a member — don't miss out on deals, offers, discounts, and bonus
         vouchers.
       </p>
-      <form className="w-full h-fit py-2 grid gap-4 px-24">
-        <div className="w-full flex space-x-1 text-xs sm:text-sm">
-          <p>Login Using :</p>
-          <div className="flex justify-center space-x-2">
+      <form className="w-full h-fit py-2 grid gap-4 px-6 sm:px-12 lg:px-24">
+        <div className="w-full flex space-x-1 text-xs sm:text-sm dark:text-gray-300">
+          <p>Login Using:</p>
+          <div className="flex space-x-4">
             <label
               htmlFor="loginOptionEmail"
-              className="flex justify-center items-center gap-1 cursor-pointer"
+              className="flex items-center gap-1 cursor-pointer hover:text-red-600"
             >
               <input
                 type="radio"
-                className="w-4 h-4 ml-1 cursor-pointer"
-                name="loginOption"
+                className="w-4 h-4 cursor-pointer"
+                name="loginOptionEmail"
                 id="loginOptionEmail"
                 value="email"
                 checked={selectedLoginOption === "email"}
@@ -43,12 +42,12 @@ const Login = () => {
             </label>
             <label
               htmlFor="loginOptionPhone"
-              className="flex justify-center items-center gap-1 cursor-pointer"
+              className="flex items-center gap-1 cursor-pointer hover:text-red-600"
             >
               <input
                 type="radio"
-                className="w-4 h-4 ml-1"
-                name="loginOption"
+                className="w-4 h-4 cursor-pointer"
+                name="loginOptionPhone"
                 id="loginOptionPhone"
                 value="phone"
                 checked={selectedLoginOption === "phone"}
@@ -61,15 +60,15 @@ const Login = () => {
         <div className="w-full grid gap-1">
           <label
             htmlFor={selectedLoginOption === "email" ? "email" : "phone"}
-            className="text-xs sm:text-sm hover:text-red-600 cursor-pointer"
+            className="w-fit text-xs sm:text-sm dark:text-gray-300 hover:text-red-600 dark:hover:text-red-600 cursor-pointer"
           >
-            {selectedLoginOption === "email" ? "Email : " : "Phone : "}
+            {selectedLoginOption === "email" ? "Email:" : "Phone:"}
           </label>
-          <div className="flex items-center w-full border border-gray-600 bg-[#E8F0FE]">
+          <div className="flex items-center w-full border border-gray-400 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 rounded">
             {selectedLoginOption === "phone" && (
-              <div className="text-gray-800 flex">
-                <p className="px-2">+91</p>
-                <div className="border-r border-gray-600"></div>
+              <div className="flex items-center px-2 text-gray-700 dark:text-gray-300">
+                +91
+                <div className="border-r mx-2 border-gray-400 dark:border-gray-600"></div>
               </div>
             )}
             <input
@@ -81,34 +80,35 @@ const Login = () => {
                   ? "Enter Your Email"
                   : "Enter Your Phone Number"
               }
-              className="w-full p-3 bg-transparent focus-within:outline-none"
+              className="w-full p-3 bg-transparent focus:outline-none text-gray-700 dark:text-gray-300"
             />
           </div>
         </div>
         <div className="w-full grid gap-1">
           <label
-            htmlFor={selectedLoginOption === "email" ? "email" : "phone"}
-            className="text-xs sm:text-sm hover:text-red-600 cursor-pointer"
+            htmlFor="password"
+            className="w-fit text-xs sm:text-sm dark:text-gray-300 hover:text-red-600 dark:hover:text-red-600 cursor-pointer"
           >
-            Password :{" "}
+            Password:
           </label>
-          <div className="flex items-center w-full border border-gray-600 bg-[#E8F0FE]">
+          <div className="flex items-center w-full border border-gray-400 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 rounded">
             <input
               type={showPassword ? "text" : "password"}
               id="password"
               name="password"
               placeholder="Enter Your Password"
-              className="w-full p-3 bg-transparent focus-within:outline-none"
+              className="w-full p-3 bg-transparent focus:outline-none text-gray-700 dark:text-gray-300"
             />
-            <div
-              className="px-2 h-full flex items-center justify-center hover:text-red-600 cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
+            <span
+              className="text-xs md:text-sm p-3 cursor-pointer w-full max-w-14 text-center font-semibold hover:text-red-600 dark:hover:text-red-600 dark:text-darkText"
+              onMouseEnter={() => setShowPassword(true)}
+              onMouseLeave={() => setShowPassword(false)}
             >
-              {!showPassword ? "Show" : "Hide"}
-            </div>
+              {showPassword ? "Hide" : "Show"}
+            </span>
           </div>
         </div>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center text-xs sm:text-sm dark:text-gray-300">
           <label
             htmlFor="remember"
             className="flex items-center gap-1 cursor-pointer hover:text-red-600"
@@ -117,20 +117,25 @@ const Login = () => {
               type="checkbox"
               name="remember"
               id="remember"
-              className="w-5 h-5 cursor-pointer"
+              className="w-4 h-4 cursor-pointer"
             />
-            <p>Remember me</p>
+            Remember me
           </label>
-          <p className="cursor-pointer hover:text-red-600">Forgot Password ?</p>
+          <p className="cursor-pointer hover:text-red-600">Forgot Password?</p>
         </div>
-        <div className="w-full grid gap-4">
-          <button className="w-full bg-[#222222] py-3 text-white text-lg font-semibold">
+        <div className="w-full grid gap-4 mt-4">
+          <button className="w-full py-3 bg-black text-white font-semibold rounded dark:text-black dark:bg-white dark:hover:text-darkText hover:bg-gray-800 dark:hover:bg-gray-600">
             Sign in
           </button>
-          <Link to={"/register"} className="w-full py-3 text-lg font-semibold border border-black text-center">
+          <Link
+            to="/register"
+            className="w-full py-3 text-center font-semibold border border-black dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-darkText"
+          >
             Become an H&M Member
           </Link>
-          <p className="text-center -mt-2">H&M Membership</p>
+          <p className="text-center text-sm dark:text-gray-300 cursor-pointer hover:text-red-600 dark:hover:text-red-600">
+            H&M Membership
+          </p>
         </div>
       </form>
     </div>
