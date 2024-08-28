@@ -2,9 +2,16 @@ import React, { useState } from "react";
 import NavigationPath from "../../customer/components/common/NavigationPath";
 import { Link } from "react-router-dom";
 import { IoIosCheckmark, IoIosClose } from "react-icons/io";
+import {
+  handleNamePrevention,
+  handlePhoneNumberPrevention,
+  handleSpacePrevention,
+} from "../../helpers/customer/register.helpers";
 
 const Register = () => {
   const [showPasswordProps, setShowPasswordProps] = useState(false);
+  const [showEmailValidation, setShowEmailValidation] = useState(false);
+  const [showPhoneValidation, setShowPhoneValidation] = useState(false);
   const [showConfirmPasswordValidation, setShowConfirmPasswordValidation] =
     useState(false);
   const [showPasswordStrength, setShowPasswordStrength] = useState(false);
@@ -38,29 +45,142 @@ const Register = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    let newValue = value;
+
+    if (name === "phone") {
+      newValue = value.replace(/\D/g, "").slice(0, 11);
+
+      if (newValue.length === 10) {
+        setShowPhoneValidation(false);
+      } else {
+        setShowPhoneValidation(true);
+      }
+    }
+
+    if (name === "email") {
+      setTimeout(() => {
+        if (!validateEmail(newValue) && newValue.length >= 10) {
+          setShowEmailValidation(true);
+        } else {
+          setShowEmailValidation(false);
+        }
+      }, 1000);
+    }
 
     if (name === "password") {
       setShowPasswordStrength(true);
       setShowPasswordProps(true);
-      validatePassword(value);
+      validatePassword(newValue);
     }
 
-    if (name === "confirmPassword" && value.length > 0) {
+    if (name === "confirmPassword" && newValue.length > 0) {
       setShowConfirmPasswordValidation(true);
     }
+
+    setData((prev) => ({
+      ...prev,
+      [name]: newValue,
+    }));
+  };
+
+  const isLeapYear = (year) => {
+    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
   };
 
   const handleDateOfBirthChange = (e) => {
     const { name, value } = e.target;
-    setDob((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    let updatedValue = value;
+
+    // Remove any non-digit characters
+    updatedValue = updatedValue.replace(/\D/g, "");
+
+    // Get current date values
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // Months are zero-indexed in JavaScript
+    const currentDay = currentDate.getDate();
+
+    // Handle year input
+    if (name === "year") {
+      if (parseInt(updatedValue, 10) > currentYear) {
+        updatedValue = currentYear.toString();
+        if (updatedValue.length > 4) {
+          setDob((prev) => ({
+            ...prev,
+            month: "",
+            day: "",
+          }));
+        }
+      } else {
+        setDob({ ...dob, [name]: updatedValue });
+      }
+    }
+
+    // Handle month input
+    else if (name === "month") {
+      if (
+        dob.year === currentYear.toString() &&
+        parseInt(updatedValue, 10) > currentMonth
+      ) {
+        updatedValue = currentMonth.toString().padStart(2, "0");
+      }
+      if (parseInt(updatedValue, 10) > 12) {
+        updatedValue = "12";
+      }
+      setDob({ ...dob, [name]: updatedValue });
+    }
+
+    // Handle day input
+    else if (name === "day") {
+      const month = parseInt(dob.month, 10);
+      const year = parseInt(dob.year, 10);
+      let maxDay = 31;
+
+      if ([4, 6, 9, 11].includes(month)) {
+        maxDay = 30;
+      } else if (month === 2) {
+        if (isLeapYear(year)) {
+          maxDay = 29;
+        } else {
+          maxDay = 28;
+        }
+      }
+
+      // Restrict day input to the max number of days in the selected month
+      if (parseInt(updatedValue, 10) > maxDay) {
+        updatedValue = maxDay.toString();
+        setDob({ ...dob, [name]: updatedValue });
+      }
+
+      // Prevent future day input if month and year are the current month and year
+      if (
+        dob.year === currentYear.toString() &&
+        dob.month === currentMonth.toString().padStart(2, "0") &&
+        parseInt(updatedValue, 10) > currentDay
+      ) {
+        updatedValue = currentDay.toString().padStart(2, "0");
+      }
+      setDob({ ...dob, [name]: updatedValue });
+    }
+
+    // Restrict the number of digits to 2 for day and month
+    if ((name === "day" || name === "month") && updatedValue.length > 2) {
+      updatedValue = updatedValue.slice(0, 2);
+      setDob({ ...dob, [name]: updatedValue });
+    }
+
+    // Restrict the number of digits to 4 for year
+    if (name === "year" && updatedValue.length > 4) {
+      updatedValue = updatedValue.slice(0, 4);
+      setDob({ ...dob, [name]: updatedValue });
+    }
   };
+
+  function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
 
   const validatePassword = (password) => {
     // Define regular expressions
@@ -91,6 +211,9 @@ const Register = () => {
     console.log("Form submitted", data, dob);
   };
 
+  console.log("Data:", data);
+  console.log("DOB:", Object.values(dob).reverse().join("-"));
+
   return (
     <div className="max-w-[45rem] w-full mx-auto flex flex-col gap-1 px-4 sm:px-6 lg:px-8">
       <NavigationPath />
@@ -120,8 +243,9 @@ const Register = () => {
               id="firstName"
               value={data.firstName}
               onChange={handleInputChange}
+              onKeyDown={handleNamePrevention}
               placeholder="Enter your first name"
-              className="w-full p-3 border border-gray-400 rounded focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300"
+              className="w-full p-3 border border-gray-400 rounded focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 focus-within:border-black dark:focus-within:border-white"
             />
           </div>
           <div className="w-full">
@@ -138,8 +262,9 @@ const Register = () => {
               id="lastName"
               value={data.lastName}
               onChange={handleInputChange}
+              onKeyDown={handleNamePrevention}
               placeholder="Enter your last name"
-              className="w-full p-3 border border-gray-400 rounded focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300"
+              className="w-full p-3 border border-gray-400 rounded focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 focus-within:border-black dark:focus-within:border-white"
             />
           </div>
         </div>
@@ -154,31 +279,45 @@ const Register = () => {
             <div className="flex gap-2 w-full">
               <input
                 required
-                name="day"
-                id="day"
+                name="year"
                 type="text"
-                value={dob.day}
+                value={dob.year}
                 onChange={handleDateOfBirthChange}
-                placeholder="DD"
-                className="w-1/3 p-3 text-center border border-gray-400 rounded focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300"
+                onKeyDown={(e) => handleSpacePrevention(e)}
+                placeholder="YYYY"
+                className="w-1/3 text-center p-3 border border-gray-400 rounded focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 focus-within:border-black dark:focus-within:border-white"
               />
               <input
                 required
                 name="month"
                 type="text"
+                disabled={dob.year.length < 4}
                 value={dob.month}
                 onChange={handleDateOfBirthChange}
+                onKeyDown={(e) => handleSpacePrevention(e)}
                 placeholder="MM"
-                className="w-1/3 p-3 text-center border border-gray-400 rounded focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300"
+                className={`w-1/3 p-3 text-center border border-gray-400 rounded focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 ${
+                  dob.year.length < 4 && "cursor-not-allowed"
+                } focus-within:border-black dark:focus-within:border-white`}
+                title={
+                  dob.year.length < 4
+                    ? "Please enter a valid year"
+                    : "Month should be between 01 and 12"
+                }
               />
               <input
                 required
-                name="year"
+                name="day"
+                id="day"
                 type="text"
-                value={dob.year}
+                value={dob.day}
                 onChange={handleDateOfBirthChange}
-                placeholder="YYYY"
-                className="w-1/3 text-center p-3 border border-gray-400 rounded focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300"
+                onKeyDown={(e) => handleSpacePrevention(e)}
+                placeholder="DD"
+                className={`w-1/3 p-3 text-center border border-gray-400 rounded focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 ${
+                  (dob.year.length < 4 || dob.month.length < 2) &&
+                  "cursor-not-allowed"
+                } focus-within:border-black dark:focus-within:border-white`}
               />
             </div>
           </div>
@@ -195,7 +334,7 @@ const Register = () => {
               id="gender"
               value={data.gender}
               onChange={handleInputChange}
-              className="w-full p-3 border border-gray-400 rounded focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300"
+              className="w-full p-3 border border-gray-400 rounded focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 focus-within:border-black dark:focus-within:border-white"
             >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
@@ -204,7 +343,7 @@ const Register = () => {
             </select>
           </div>
         </div>
-        <div className="w-full">
+        <div className="w-full relative">
           <label
             htmlFor="email"
             className="text-xs md:text-sm dark:text-gray-300 hover:text-red-600 dark:hover:text-red-600 cursor-pointer"
@@ -218,9 +357,15 @@ const Register = () => {
             id="email"
             value={data.email}
             onChange={handleInputChange}
+            onKeyDown={(e) => handleSpacePrevention(e)}
             placeholder="Enter Your Email"
-            className="w-full p-3 border border-gray-400 rounded focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300"
+            className="w-full p-3 border border-gray-400 rounded focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 focus-within:border-black dark:focus-within:border-white"
           />
+          {showEmailValidation && (
+            <p className="text-xs text-red-600 absolute -bottom-3.5">
+              Please enter a valid email address
+            </p>
+          )}
         </div>
         <div className="w-full">
           <label
@@ -229,7 +374,7 @@ const Register = () => {
           >
             Phone: <strong className="text-red-600">*</strong>
           </label>
-          <div className="flex items-center w-full border border-gray-400 dark:border-gray-600 dark:bg-gray-800 rounded-lg overflow-hidden focus-within:border-black dark:focus-within:border-white">
+          <div className="relative flex items-center w-full border border-gray-400 dark:border-gray-600 dark:bg-gray-800 rounded-lg focus-within:border-black dark:focus-within:border-white">
             <div className="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 border-r-2 border-r-gray-400">
               <p>+91</p>
             </div>
@@ -241,10 +386,21 @@ const Register = () => {
                 id="phone"
                 value={data.phone}
                 onChange={handleInputChange}
+                onKeyDown={handlePhoneNumberPrevention}
                 placeholder="Enter Your Phone Number"
                 className="w-full p-3 bg-transparent focus:outline-none dark:text-gray-300"
               />
             </div>
+            {showPhoneValidation &&
+              (data.phone.length > 10 ? (
+                <p className="absolute -bottom-[18px] left-0 text-red-600 text-xs sm:text-sm">
+                  Invalid Phone Number
+                </p>
+              ) : (
+                <p className="absolute -bottom-[18px] left-0 text-red-500 text-xs sm:text-sm">
+                  Phone Number Should be 10 digits
+                </p>
+              ))}
           </div>
         </div>
 
@@ -255,7 +411,7 @@ const Register = () => {
           >
             Create a Password: <strong className="text-red-600">*</strong>
           </label>
-          <div className="w-full flex items-center border border-gray-400 rounded dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300">
+          <div className="w-full flex items-center border border-gray-400 rounded dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 focus-within:border-black dark:focus-within:border-white">
             <input
               required
               type={showPassword ? "text" : "password"}
@@ -263,6 +419,7 @@ const Register = () => {
               id="password"
               value={data.password}
               onChange={handleInputChange}
+              onKeyDown={(e) => handleSpacePrevention(e)}
               placeholder="Enter Your Password"
               className="w-full p-3 bg-transparent focus:outline-none"
             />
@@ -275,19 +432,19 @@ const Register = () => {
             </span>
           </div>
           {showPasswordStrength && (
-            <div className="flex items-center gap-1 text-sm sm:text-lg dark:text-darkText">
+            <div className="flex items-center gap-1 text-sm sm:text-[0.8rem] md:text-[0.9rem] dark:text-darkText">
               Password strength:{" "}
               <span
                 className={`${
-                  data.password.length < 6
+                  data.password.length < 8
                     ? "bg-red-600 px-10"
                     : data.password.length < 10
-                    ? "bg-yellow-600 px-16"
+                    ? "bg-yellow-400 px-16"
                     : "bg-green-600 px-20"
                 } py-1.5 rounded`}
               ></span>{" "}
               <span>
-                {data.password.length < 6
+                {data.password.length < 8
                   ? "Weak"
                   : data.password.length < 10
                   ? "Medium"
@@ -383,7 +540,7 @@ const Register = () => {
           >
             Confirm Password: <strong className="text-red-600">*</strong>
           </label>
-          <div className="w-full flex items-center border border-gray-400 rounded dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300">
+          <div className="w-full flex items-center border border-gray-400 rounded dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 focus-within:border-black dark:focus-within:border-white">
             <input
               required
               type={showConfirmPassword ? "text" : "password"}
@@ -391,6 +548,7 @@ const Register = () => {
               id="confirmPassword"
               value={data.confirmPassword}
               onChange={handleInputChange}
+              onKeyDown={(e) => handleSpacePrevention(e)}
               placeholder="Confirm Your Password"
               className="w-full p-3 bg-transparent focus:outline-none"
             />
